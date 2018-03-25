@@ -4,7 +4,8 @@ var port = process.env.PORT || 1337;//这里使用1337端口
 var app = express();
 var mysql=require('mysql');
 var bodyParser =require('body-parser');
-var captchapng = require('./captchapng/lib/captchapng') ;
+var captchapng = require('./captchapng/lib/captchapng');
+var crypto = require('crypto');
 
 /*与数据库服务器建立连接*/
 var connection=mysql.createConnection({
@@ -28,10 +29,12 @@ connection.connect(function(err)
 })
 
 
-var url=path.join("C:","工程2.0","前端");
+var url=path.join("F:","软件工程实验","工程2.0","前端");
+//var url=path.join("F:","软件工程实验","工程2.0","前端");
+app.use(express.static(url));
 app.get("/",function(req,res){
     /*登陆页面的路由*/
-    res.sendFile( path.join(url+"index.html") );
+    res.sendFile( path.join(url,"index.html") );
 });
 app.get("/teacher",function(req,res){
     /*教师登陆端的路由*/
@@ -51,22 +54,29 @@ app.get("/captcha.png",function(req,response){
 });
 
 var urlencoded=bodyParser.urlencoded({extended:false});//form数据的请求体类型是 x-www-form-urlencoded 这里选择用urlencoded 格式来解析post 请求
+var hash=crypto.createHash('sha256');
 app.post("/login",urlencoded,function(req,res){
-    res.sendFile( __dirname + "/login/" + "login.html" );
-    console.log("a post received" + port);
-    console.log(req.body.logname);
-    console.log(req.body.logpass);
-    connection.query("SELECT * from student_pass where user_id=?",req.body.logname,function(err,result)
+    if(req.body.logpass.lenth<6||req.body.logpass.lenth>16)
     {
-         /*node.js 使用回调函数的形式处理mysql 的查询结果*/
+        /*密码位数不对则不反应*/
+    }
+    else
+    {
+        hash.update(req.logpass,"utf8");
+        console.log(hash.digest("hex"));
+        connection.query("SELECT * from teacher_pass where uid=? and pwd=?",req.body.logname,hash.digest("hex"),function(err,result)
+
+    {
         if(err)
-            console.log("查询数据失败");
+        {
+            console.log("查询失败："+err);
+        }
         else{
-            console.log("查询成功");
-            console.log(result);
+            res.sendfile(path.join(url,"teacher.html"));
             connection.end();
         }
     })
+    }
 });
 app.listen(port,function(){
     console.log("server start at:" + port);
