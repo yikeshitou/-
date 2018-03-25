@@ -46,21 +46,21 @@ function loadNumMask1() {
     return numbmp;
 }
 
-
+// width,height,dispNumber:验证码中的数字
 function captchapng(width,height,dispNumber) {
     this.width   = width;
     this.height  = height;
     this.depth   = 8;
     this.dispNumber = ""+dispNumber.toString();
-    this.widthAverage = parseInt(this.width/this.dispNumber.length);
-
+    this.widthAverage = parseInt(this.width/this.dispNumber.length);//widthAverage：验证码中每个数字的宽度
     var p = new pnglib(this.width,this.height,this.depth);
 
+    //for（）部分是循环改变每一个验证码中数字的样式，numSection：表示此时正在处理的验证码数字中的第几个数字
     for (var numSection=0;numSection<this.dispNumber.length;numSection++){
 
-        var dispNum = this.dispNumber[numSection].valueOf();
+        var dispNum = this.dispNumber[numSection].valueOf();//dispNum:验证码中的一个数字
 
-        var font = parseInt(Math.random()*myself.numMask.length);
+        var font = parseInt(Math.random()*myself.numMask.length); //font：随机确定使用numMask[0]或者numMask[1]
         font = (font>=myself.numMask.length?0:font);
         //var random_x_offs = 0, random_y_offs = 0;
         var random_x_offs = parseInt(Math.random()*(this.widthAverage - myself.numMask[font][dispNum][0].length));
@@ -68,11 +68,11 @@ function captchapng(width,height,dispNumber) {
         random_x_offs = (random_x_offs<0?0:random_x_offs);
         random_y_offs = (random_y_offs<0?0:random_y_offs);
 
-        for (var i=0;(i<myself.numMask[font][dispNum].length) && ((i+random_y_offs)<this.height);i++){
+        for (var i=0;(i<myself.numMask[font][dispNum].length) && ((i+random_y_offs)<this.height);i++){ 
             var lineIndex = p.index(this.widthAverage * numSection + random_x_offs,i+random_y_offs);
             for (var j=0;j<myself.numMask[font][dispNum][i].length;j++){
                 if ((myself.numMask[font][dispNum][i][j]=='1') && (this.widthAverage * numSection + random_x_offs+j)<this.width){
-                    p.buffer[lineIndex+j]='\x01';
+                    p.buffer[lineIndex+j]='\x01'; //???????
                 }
             }
         }
