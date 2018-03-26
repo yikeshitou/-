@@ -55,26 +55,35 @@ app.get("/captcha.png",function(req,response){
 });
 
 var urlencoded=bodyParser.urlencoded({extended:false});//form数据的请求体类型是 x-www-form-urlencoded 这里选择用urlencoded 格式来解析post 请求
-var hash=crypto.createHash('sha256');
 app.post("/login",urlencoded,function(req,res){
+
     if(req.body.logpass.lenth<6||req.body.logpass.lenth>16)
     {
         /*密码位数不对则不反应*/
     }
     else
     {
+        var hash=crypto.createHash('sha256');
         console.log(typeof(req.body.logpass));
         hash.update(req.body.logpass,"utf8");
-        connection.query("SELECT * from teacher_pass where uid=? and pwd=?",[req.body.logname,hash.digest("hex")],function(err,result)
+        var hexhash=hash.digest("hex");
+        console.log(hexhash);
+        connection.query("SELECT * from teacher_pass where uid=? and pwd=?",[req.body.logname,hexhash],function(err,result)
     {
         if(err)
         {
             console.log("查询失败："+err);
         }
         else{
-            res.sendFile(path.join(url,"teacher.html"));
-            connection.end();
+            console.log(result);
+            if(result!=""){
+                res.sendFile(path.join(url,"teacher.html"));
+            }
+            else{
+                res.send("密码错误，点击返回");
+            }
         }
+        connection.commit();
     })
     }
 });
