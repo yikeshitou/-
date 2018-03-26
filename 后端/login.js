@@ -11,7 +11,7 @@ var crypto = require('crypto');
 var connection=mysql.createConnection({
     host:'localhost',
     port:3306,
-    database:'school',
+    database:'t&s',
     user:'root',
     password:'root',
 });
@@ -29,7 +29,7 @@ connection.connect(function(err)
 })
 
 
-var url=path.join("F:","软件工程实验","工程2.0","前端");
+var url=path.join("C:","工程2.0","前端");
 //var url=path.join("F:","软件工程实验","工程2.0","前端");
 app.use(express.static(url));
 app.get("/",function(req,res){
@@ -39,7 +39,7 @@ app.get("/",function(req,res){
 app.get("/teacher",function(req,res){
     /*教师登陆端的路由*/
     /*需检查session*/
-    res.sendfile(path.join(url,"teacher.html"));
+    res.sendFile(path.join(url,"teacher.html"));
 });
 app.get("/captcha.png",function(req,response){
         var p = new captchapng(80,30,parseInt(Math.random()*9000+1000)); // width,height,numeric captcha
@@ -62,17 +62,16 @@ app.post("/login",urlencoded,function(req,res){
     }
     else
     {
-        hash.update(req.logpass,"utf8");
-        console.log(hash.digest("hex"));
-        connection.query("SELECT * from teacher_pass where uid=? and pwd=?",req.body.logname,hash.digest("hex"),function(err,result)
-
+        console.log(typeof(req.body.logpass));
+        hash.update(req.body.logpass,"utf8");
+        connection.query("SELECT * from teacher_pass where uid=? and pwd=?",[req.body.logname,hash.digest("hex")],function(err,result)
     {
         if(err)
         {
             console.log("查询失败："+err);
         }
         else{
-            res.sendfile(path.join(url,"teacher.html"));
+            res.sendFile(path.join(url,"teacher.html"));
             connection.end();
         }
     })
