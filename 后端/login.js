@@ -28,10 +28,11 @@ connection.connect(function(err)
     }
 })
 
-
-var url=path.join("C:","工程2.0","前端");
+var url=path.join("D:","Git","-","-","前端");//刘哲宁电脑本地调试所需，其他电脑本地调试可选择性注释
+app.use(express.static( '前端'));//保证本地调试，浏览器可以正常加载css
+//var url=path.join("C:","工程2.0","前端");
 //var url=path.join("F:","软件工程实验","工程2.0","前端");
-app.use(express.static(url));
+//app.use(express.static(url));
 app.get("/",function(req,res){
     /*登陆页面的路由*/
     res.sendFile( path.join(url,"index.html") );
