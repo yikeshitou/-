@@ -76,7 +76,7 @@ app.post("/login",urlencoded,function(req,res){
         else{
             console.log(result);
             if(result!=""){
-                res.sendFile(path.join(url,"teacher.html"));
+                res.sendFile(path.join(url,"pages","student.html"));
             }
             else{
                 res.send("密码错误，点击返回");
