@@ -1,5 +1,5 @@
 var express = require("express");
-var path = require('path')
+var path = require('path');
 var port = process.env.PORT || 1337;//这里使用1337端口
 var app = express();
 var mysql=require('mysql');
@@ -36,12 +36,12 @@ connection.connect(function(err)
 var url=path.join("C:","工程2.0","前端");
 //var url=path.join("F:","软件工程实验","工程2.0","前端");
 app.use(express.static(url));
-app.use(cookieParser(randomstring));
 app.get("/",function(req,res){
     /*登陆页面的路由*/
     res.sendFile( path.join(url,"index.html") );
 });
 
+app.use("/teacher",cookieParser(randomstring));
 app.get("/teacher",function(req,res){
     /*教师登陆端的路由*/
     /*需检查session*/
@@ -67,6 +67,7 @@ app.get("/teacher",function(req,res){
     
 });
 
+app.use("/student",cookieParser(randomstring));
 app.get('/student',function(req,res){
     /*学生端的路由*/
     var d=domin.create();
@@ -102,13 +103,14 @@ app.get("/captcha.png",function(req,response){
         response.end(imgbase64);
 });
 
-app.use(session({
+app.use("/login",session({
     secret: ""+crypto.randomBytes(128),
 
     cookie:{
         maxAge:60*1000*10
     }
 }));
+app.use(".login",cookieParser(randomstring));
 app.post("/login",urlencoded,function(req,res){
 
     if(req.body.logpass.lenth<6||req.body.logpass.lenth>16)
