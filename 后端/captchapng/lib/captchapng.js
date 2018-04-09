@@ -1,83 +1,133 @@
-/**
- * captchapng
- * Captcha PNG generator
- * @Author: George Chan
- * @Email: gchan@21cn.com
- * @Version: 0.0.1
- * @Date: 2013-08-18
- * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+//var http = require('http');
+var BMP24_1 = require("gd-bmp").BMP24; // gd-bmp
+var fs = require('fs');
+// tslint:disable:no-console
+/*
+ 用PCtoLCD2002取字模
+ 行列式扫描，正向取模（高位在前）
  */
-
-var pnglib = require('pnglib');
-this.numMask = [];
-this.numMask[0]=[];
-this.numMask[0]=loadNumMask0();
-this.numMask[1]=loadNumMask1();
-myself = this;
-
-function loadNumMask0() {
-    var numbmp=[];
-    numbmp[0]=["0011111000","0111111110","0111111110","1110001111","1110001111","1110001111","1110001111","1110001111","1110001111","1110001111","1110001111","1110001111","1110001111","1110001111","1110001111","1110001111","0111111111"," 111111110","0011111100"];
-    numbmp[1]=["0000011","0000111","0011111","1111111","1111111","0001111","0001111","0001111","0001111","0001111","0001111","0001111","0001111","0001111","0001111","0001111","0001111","0001111","0001111"];
-    numbmp[2]=["001111100","011111110","111111111","111001111","111001111","111001111","111001111","000011111","000011110","000111110","000111100","000111100","001111000","001111000","011110000","011110000","111111111","111111111","111111111"];
-    numbmp[3]=["0011111100","0111111110","1111111111","1111001111","1111001111","1111001111","0000001111","0001111110","0001111100","0001111111","0000001111","1111001111","1111001111","1111001111","1111001111","1111001111","1111111111","0111111110","0011111100"];
-    numbmp[4]=["00001111110","00001111110","00011111110","00011111110","00011111110","00111011110","00111011110","00111011110","01110011110","01110011110","01110011110","11100011110","11111111111","11111111111","11111111111","11111111111","00000011110","00000011110","00000011110"];
-    numbmp[5]=["1111111111","1111111111","1111111111","1111000000","1111000000","1111011100","1111111110","1111111111","1111001111","1111001111","0000001111","0000001111","1111001111","1111001111","1111001111","1111001111","1111111111","0111111110","0011111100"];
-    numbmp[6]=["0011111100","0111111110","0111111111","1111001111","1111001111","1111000000","1111011100","1111111110","1111111111","1111001111","1111001111","1111001111","1111001111","1111001111","1111001111","1111001111","0111111111","0111111110","0011111100"];
-    numbmp[7]=["11111111","11111111","11111111","00001111","00001111","00001111","00001110","00001110","00011110","00011110","00011110","00011100","00111100","00111100","00111100","00111100","00111000","01111000","01111000"];
-    numbmp[8]=["0011111100","0111111110","1111111111","1111001111","1111001111","1111001111","1111001111","0111111110","0011111100","0111111110","1111001111","1111001111","1111001111","1111001111","1111001111","1111001111","1111111111","0111111110","0011111100"];
-    numbmp[9]=["0011111100","0111111110","1111111111","1111001111","1111001111","1111001111","1111001111","1111001111","1111001111","1111001111","1111111111","0111111111","0011101111","0000001111","1111001111","1111001111","1111111110","0111111110","0011111000"];
-
-    return numbmp;
+var cnfonts = {
+    w: 16,
+    h: 16,
+    fonts: '中国',
+    data: [
+        [0x01, 0x01, 0x01, 0x01, 0x3F, 0x21, 0x21, 0x21, 0x21, 0x21, 0x3F, 0x21, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0xF8, 0x08, 0x08, 0x08, 0x08, 0x08, 0xF8, 0x08, 0x00, 0x00, 0x00, 0x00],
+        [0x00, 0x7F, 0x40, 0x40, 0x5F, 0x41, 0x41, 0x4F, 0x41, 0x41, 0x41, 0x5F, 0x40, 0x40, 0x7F, 0x40, 0x00, 0xFC, 0x04, 0x04, 0xF4, 0x04, 0x04, 0xE4, 0x04, 0x44, 0x24, 0xF4, 0x04, 0x04, 0xFC, 0x04],
+    ],
+};
+// 测试字库
+function makeImg2() {
+    var img = new BMP24_1.BMP24(300, 140);
+    img.drawString('helloworld', 20, 10, BMP24_1.BMP24.font8x16, 0xff0000);
+    img.drawString('helloworld', 20, 25, BMP24_1.BMP24.font12x24, 0x00ff00);
+    img.drawString('helloworld', 20, 50, BMP24_1.BMP24.font16x32, 0x0000ff);
+    img.drawString('中国', 20, 85, cnfonts, 0xffffff);
+    return img.getFileData();
 }
 
-function loadNumMask1() {
-    var numbmp=[];
-    numbmp[0] = ["000000001111000","000000111111110","000001110000110","000011000000011","000110000000011","001100000000011","011100000000011","011000000000011","111000000000110","110000000000110","110000000001110","110000000001100","110000000011000","110000000111000","011000011110000","011111111000000","000111110000000"];
-    numbmp[1] = ["00000111","00001111","00011110","00010110","00001100","00001100","00011000","00011000","00110000","00110000","00110000","01100000","01100000","01100000","11000000","11000000","11000000"];
-    numbmp[2] = ["00000011111000","00001111111110","00011100000110","00011000000011","00000000000011","00000000000011","00000000000011","00000000000110","00000000001110","00000000011100","00000001110000","00000111100000","00001110000000","00111100000000","01110000000000","11111111110000","11111111111110","00000000011110"];
-    numbmp[3] = ["000000111111000","000011111111110","000111100000111","000110000000011","000000000000011","000000000000011","000000000001110","000000111111000","000000111111000","000000000011100","000000000001100","000000000001100","110000000001100","111000000011100","111100000111000","001111111110000","000111111000000"];
-    numbmp[4] = ["00000011000001","00000110000011","00001100000010","00011000000110","00111000000110","00110000001100","01100000001100","01100000001000","11000000011000","11111111111111","11111111111111","00000000110000","00000000110000","00000000100000","00000001100000","00000001100000","00000001100000"];
-    numbmp[5] = ["0000001111111111","0000011111111111","0000111000000000","0000110000000000","0000110000000000","0001110000000000","0001101111100000","0001111111111000","0001110000011000","0000000000001100","0000000000001100","0000000000001100","1100000000001100","1110000000011000","1111000001111000","0111111111100000","0001111110000000"];
-    numbmp[6] = ["000000001111100","000000111111110","000011110000111","000111000000011","000110000000000","001100000000000","011001111100000","011111111111000","111110000011000","111000000001100","110000000001100","110000000001100","110000000001100","111000000011000","011100001110000","001111111100000","000111110000000"];
-    numbmp[7] = ["1111111111111","1111111111111","0000000001110","0000000011100","0000000111000","0000000110000","0000001100000","0000011100000","0000111000000","0000110000000","0001100000000","0011100000000","0011000000000","0111000000000","1110000000000","1100000000000","1100000000000"];
-    numbmp[8] = ["0000000111110000","0000011111111100","0000011000001110","0000110000000111","0000110000011111","0000110001111000","0000011111100000","0000011110000000","0001111111000000","0011100011100000","0111000001110000","1110000000110000","1100000000110000","1100000001110000","1110000011100000","0111111111000000","0001111100000000"];
-    numbmp[9] = ["0000011111000","0001111111110","0011100000110","0011000000011","0110000000011","0110000000011","0110000000011","0110000000111","0011000011110","0011111111110","0000111100110","0000000001100","0000000011000","0000000111000","0000011110000","1111111000000","1111110000000"];
-    return numbmp;
+// 仿PHP的rand函数
+function rand(min, max) {
+    return Math.random() * (max - min + 1) + min | 0; // 特殊的技巧，|0可以强制转换为整数
 }
 
-// width,height,dispNumber:验证码中的数字
-function captchapng(width,height,dispNumber) {
-    this.width   = width;
-    this.height  = height;
-    this.depth   = 8;
-    this.dispNumber = ""+dispNumber.toString();
-    this.widthAverage = parseInt(this.width/this.dispNumber.length);//widthAverage：验证码中每个数字的宽度
-    var p = new pnglib(this.width,this.height,this.depth);
+function base64_encode(file) {
+    // read binary data
+    var bitmap = fs.readFileSync(file);
+    // convert binary data to base64 encoded string
+    return new Buffer(bitmap).toString('base64');
+}
 
-    //for（）部分是循环改变每一个验证码中数字的样式，numSection：表示此时正在处理的验证码数字中的第几个数字
-    for (var numSection=0;numSection<this.dispNumber.length;numSection++){
+function makeCapcha(str) {
+    console.log("dataUrl");
+    var img = new BMP24_1(100, 40);
+    img.drawCircle(rand(0, 100), rand(0, 40), rand(10 , 40), rand(0, 0xffffff));//画圆
+    img.drawRect(0, 0, img.w-1, img.h-1, rand(0, 0xffffff));//边框
+    img.fillRect(rand(0, 100), rand(0, 40), rand(10, 35), rand(10, 35), rand(0, 0xffffff));
+    img.drawLine(rand(0, 100), rand(0, 40), rand(0, 100), rand(0, 40), rand(0, 0xffffff));//画线
+    //return img;
 
-        var dispNum = this.dispNumber[numSection].valueOf();//dispNum:验证码中的一个数字
-
-        var font = parseInt(Math.random()*myself.numMask.length); //font：随机确定使用numMask[0]或者numMask[1]
-        font = (font>=myself.numMask.length?0:font);
-        //var random_x_offs = 0, random_y_offs = 0;
-        var random_x_offs = parseInt(Math.random()*(this.widthAverage - myself.numMask[font][dispNum][0].length));
-        var random_y_offs = parseInt(Math.random()*(this.height - myself.numMask[font][dispNum].length));
-        random_x_offs = (random_x_offs<0?0:random_x_offs);
-        random_y_offs = (random_y_offs<0?0:random_y_offs);
-
-        for (var i=0;(i<myself.numMask[font][dispNum].length) && ((i+random_y_offs)<this.height);i++){ 
-            var lineIndex = p.index(this.widthAverage * numSection + random_x_offs,i+random_y_offs);
-            for (var j=0;j<myself.numMask[font][dispNum][i].length;j++){
-                if ((myself.numMask[font][dispNum][i][j]=='1') && (this.widthAverage * numSection + random_x_offs+j)<this.width){
-                    p.buffer[lineIndex+j]='\x01'; //???????
-                }
-            }
+    //画曲线
+    var w=img.w/2;
+    var h=img.h;
+    var color = rand(0, 0xffffff);
+    var y1=rand(-5,5); //Y轴位置调整
+    var w2=rand(10,15); //数值越小频率越高
+    var h3=rand(4,6); //数值越小幅度越大
+    var bl = rand(1,5);
+    for(var i=-w; i<w; i+=0.1) {
+        var y = Math.floor(h/h3*Math.sin(i/w2)+h/2+y1);
+        var x = Math.floor(i+w);
+        for(var j=0; j<bl; j++){
+            img.drawPoint(x, y+j, color);
         }
     }
-    return p;
+
+    //var p = "ABCDEFGHKMNPQRSTUVWXYZ3456789";
+    /*var str = '';
+    for(var i=0; i<5; i++){
+        str += p.charAt(Math.random() * p.length |0);
+    }*/
+
+    var fonts = [BMP24_1.font8x16, BMP24_1.font12x24, BMP24_1.font16x32];
+    var x = 15, y=8;
+    for(var i=0; i<str.length; i++){
+        var f = fonts[Math.random() * fonts.length |0];
+        y = 8 + rand(-10, 10);
+        img.drawChar(str[i], x, y, f, rand(0, 0xffffff));
+        x += f.w + rand(2, 8);
+    }
+    //return img;
+    const dataUrl = 'data:image/bmp;base64,' + img.getFileData().toString('base64');
+    console.log(dataUrl);
+    return dataUrl;
 }
 
-module.exports = captchapng;
+
+
+
+//测试生成验证码的效率
+/*var start = Date.now();
+var i = 0;
+while((Date.now() - start) < 1000){
+    // var img = makeCapcha();
+    var img = makeImg2();
+    i++;
+}
+console.log("1秒钟生成：" + i);*/
+
+/*http.createServer(function (req,res) {
+    switch (req.url) {
+        case '/favicon.ico':
+            res.end();
+            break;
+        case '/img2': {
+            console.time('makeImg2');
+            var img = makeImg2();
+            console.timeEnd('makeImg2');
+            res.setHeader('Content-Type', 'image/bmp');
+            res.end(img.getFileData());
+            break;
+        }
+        case '/data': {
+            var img = makeImg2();
+            var dataUrl = 'data:image/bmp;base64,' + img.getFileData().toString('base64');
+            res.setHeader('Content-Type', 'text/html');
+            res.end("<img src=\"" + dataUrl + "\"/>");
+            break;
+        }
+        case '/':
+        default: {
+            console.time('makeCapcha');
+            var img = makeCapcha();
+            //console.log(img.getFileData());
+            console.timeEnd('makeCapcha');
+            res.setHeader('Content-Type', 'image/bmp');
+            res.end(img);
+        }
+    }
+}).listen(3000);*/
+
+console.log('localhost:3000');
+
+exports.makeCapcha=function(){};
+exports.makeImg2=function(){};
