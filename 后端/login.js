@@ -30,7 +30,7 @@ connection.connect(function(err)
     {
         console.log("与服务器建立连接成功"); 
     }
-})
+});
 
 
 var url=path.join("C:","工程2.0","前端");
@@ -55,7 +55,7 @@ app.get("/teacher",function(req,res){
         function()
         {
             console.log(req.signedCookies);
-            if(req.signedCookies["islogin"]==1)
+            if(req.signedCookies.islogin==1)
             {
                 res.sendFile(path.join(url,"pages","teacher.html"));                
             }
@@ -63,7 +63,7 @@ app.get("/teacher",function(req,res){
                 res.send("<a href='https://www.hitwh.xyz'>请登陆<a>");        
             }
         }
-    ) 
+    ) ;
     
 });
 
@@ -80,7 +80,7 @@ app.get('/student',function(req,res){
         function()
         {
             console.log(req.signedCookies);
-            if(req.signedCookies["islogin"]==1)
+            if(req.signedCookie.islogin==1)
             {
                 res.sendFile(path.join(url,"pages","student.html"));                
             }
@@ -140,19 +140,19 @@ app.post("/login",urlencoded,function(req,res){
                 res.cookie("username",logname,{
                     maxAge:1000*60*60,
                     signed:true
-                })
+                });
                 res.sendFile(path.join(url,"pages","student.html"));
             }
             else{
                 res.cookie("islogin",0,{
                     maxAge:1000*60*60,
                     signed:true
-                })
+                });
                 res.send("<a href='https://www.hitwh.xyz'>密码错误，点击返回<a>");
             }
         }
         connection.commit();
-    })
+    });
     }
 });
 app.listen(port,function(){
