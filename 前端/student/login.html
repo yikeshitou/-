@@ -1,0 +1,53 @@
+<!DOCTYPR html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1"> 
+        <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+        <title>学生-登陆</title>
+        <link rel="stylesheet" type="text/css" href="css/normalize.css" />
+        <link rel="stylesheet" type="text/css" href="css/login.css" />
+        <link rel="stylesheet" type="text/css" href="css/component.css" />
+    </head>
+    <body>
+        <div class="container demo-1">
+            <div class="content">
+                <div id="large-header" class="large-header">
+                    <canvas id="demo-canvas"></canvas>
+                    <div class="logo_box">
+                        <h3>欢迎您</h3>
+                        
+                            <div class="input_outer">
+                            <span class="u_user"></span>
+                            <input name="logname" class="text" style="color: #FFFFFF !important" type="text" placeholder="请输入账户">
+                            </div>
+                            <div class="input_outer">
+                            <span class="us_uer"></span>
+                            <input name="logpass" class="text" style="color: #FFFFFF !important; position:absolute; z-index:100;"value="" type="password" placeholder="请输入密码">
+                            </div>
+                            <div class="mb2"><a class="act-but submit"  id="TencentCaptcha" data-appid="2009549499" data-cbfn="callback"  style="color: #FFFFFF">登录</a></div>
+                            <div class="mb2"><a class="act-but submit" href="sign_up" style="color: #FFFFFF">注册</a></div>							
+                          
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /container -->
+                <script>
+                    window.callback = function(res){
+                    if(res.ret === 0){
+                        var username=document.getElementsByName("logname").values();
+                        var password=document.getElementsByName("logpass").values();
+                        $.post("https://www.hitwh.xyz/student/",{"username":username,"password":password,"ticket":res.ticket,"randstr":res.randstr});
+                    }                
+                    else{
+                        alert("验证失败");
+                    }
+                }
+                </script>
+                <script src="js/TweenLite.min.js"></script>
+                <script src="js/EasePack.min.js"></script>
+                <script src="js/rAF.js"></script>
+                <script src="js/demo-1.js"></script>
+                <script src="../public/node_modules/jquery/dist/jquery.min.js"></script>
+                <div style="text-align:center;">
+</html>
