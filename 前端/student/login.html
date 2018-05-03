@@ -1,9 +1,10 @@
-<!DOCTYPR html>
+<!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1"> 
         <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+        <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
         <title>学生-登陆</title>
         <link rel="stylesheet" type="text/css" href="css/normalize.css" />
         <link rel="stylesheet" type="text/css" href="css/login.css" />
@@ -31,13 +32,13 @@
                             </div>
                         </div>
                     </div>
-                </div><!-- /container -->
+                </div><!-- /container -->             
                 <script>
                     window.callback = function(res){
                     if(res.ret === 0){
-                        var username=document.getElementsByName("logname").values();
-                        var password=document.getElementsByName("logpass").values();
-                        $.post("https://www.hitwh.xyz/student/",{"username":username,"password":password,"ticket":res.ticket,"randstr":res.randstr});
+                        var username=document.getElementsByName("logname").value;
+                        var password=document.getElementsByName("logpass").value;
+                        $.post("/login",{"username":username,"password":password,"ticket":res.ticket,"randstr":res.randstr});
                     }                
                     else{
                         alert("验证失败");
@@ -48,6 +49,6 @@
                 <script src="js/EasePack.min.js"></script>
                 <script src="js/rAF.js"></script>
                 <script src="js/demo-1.js"></script>
-                <script src="../public/node_modules/jquery/dist/jquery.min.js"></script>
-                <div style="text-align:center;">
+                <div style="text-align:center;"></div>
+    </body>
 </html>
